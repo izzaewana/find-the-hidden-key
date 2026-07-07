@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost in the Maze</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Lost in the Maze</h1>
+
+        <div id="status-bar" class="hidden">
+            <p>Player: <span id="player-name"></span></p>
+            <p>Health: <span id="health"></span></p>
+            <p>Coins: <span id="coins"></span></p>
+        </div>
+
+        <div id="scene">🌙</div>
+
+        <div id="map" class="hidden">
+            <div class="map-room start-room">Start</div>
+            <div class="map-room tunnel-room">Tunnel</div>
+            <div class="map-room key-room">Key</div>
+            <div class="map-room river-room">River</div>
+            <div class="map-room bridge-room">Bridge</div>
+            <div class="map-room exit-room">Exit</div>
+            <div class="map-room forest-room">Forest</div>
+
+            <div id="player-token">🧍‍♀️</div>
+        </div>
+
+        <div id="story-box">
+            <p id="story-text">Enter your name to begin.</p>
+        </div>
+
+        <div id="start-screen">
+            <input id="name-input" type="text" placeholder="Enter your name">
+            <button id="start-button">Start Game</button>
+        </div>
+
+        <div id="choices"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
