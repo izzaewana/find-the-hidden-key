@@ -1,45 +1,44 @@
-# Lost in the Maze
+# Find the Hidden Key
 
-A simple browser-based JavaScript adventure game where the player explores a maze, makes choices, collects coins, finds a key, and tries to escape.
+A cozy pixel-style browser game built with HTML, CSS, and JavaScript.
 
-Live site: https://izzaewana.github.io/lost-in-the-maze/
+Live site: https://izzaewana.github.io/find-the-hidden-key/
 
-## About the Game
+## About
 
-Lost in the Maze is an interactive choice-based game built with HTML, CSS, and JavaScript. The player enters their name, moves through different locations on the map, and makes decisions that affect the ending of the game.
+Find the Hidden Key is a simple tile-based adventure game. The player explores a cozy pixel map, collects coins, interacts with flowers and chickens, finds the hidden key, and unlocks the gate to win.
 
 ## Features
 
-* Player name input
-* Health system
-* Coin collection
-* Key item collection
-* Multiple paths and endings
-* Animated typing effect
-* Moving player marker on the map
-* Simple sound effects
-* Responsive browser layout
-
-## Technologies Used
-
-* HTML
-* CSS
-* JavaScript
-
-## Files
-
-* `index.html` - main structure of the game
-* `style.css` - game design and layout
-* `script.js` - game logic and interactions
+- Pixel-style tile map
+- Keyboard movement with Arrow Keys or WASD
+- Mobile control buttons
+- Coin collection
+- Hidden key objective
+- Chicken, flower, coin, key, and win sound effects
+- Cozy background music
+- Responsive layout for desktop and phone
 
 ## How to Play
 
 1. Enter your name.
-2. Click **Start Game**.
-3. Choose where to go in the maze.
-4. Collect coins and find the key.
-5. Try to escape without losing all your health.
+2. Click **Start**.
+3. Move around using Arrow Keys, WASD, or the phone buttons.
+4. Collect 3 coins.
+5. Find the hidden key.
+6. Unlock the gate to win.
+
+## Technologies Used
+
+- HTML
+- CSS
+- JavaScript
+- Kenney pixel assets
+
+## Credits
+
+Pixel assets are from Kenney. The asset pack is released under CC0, meaning it can be used freely for personal, educational, and commercial projects.
 
 ## Project Status
 
-This is a beginner JavaScript project created to practice DOM manipulation, functions, events, conditionals, and basic game logic.
+This is a beginner JavaScript project created to practice DOM manipulation, arrays, functions, keyboard events, mobile controls, CSS grid, and simple game logic.

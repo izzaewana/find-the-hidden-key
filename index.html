@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost in the Maze</title>
+    <title>Lost in the Maze: Cozy Edition</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>Lost in the Maze</h1>
+    <main class="game-wrapper">
+        <section class="game-panel">
+            <div class="title-area">
+                <h1>Lost in the Maze</h1>
+                <p>Cozy Edition</p>
+            </div>
 
-        <div id="status-bar" class="hidden">
-            <p>Player: <span id="player-name"></span></p>
-            <p>Health: <span id="health"></span></p>
-            <p>Coins: <span id="coins"></span></p>
-        </div>
+            <div id="hud">
+                <div>Player: <span id="player-name">Traveler</span></div>
+                <div>Coins: <span id="coins">0</span>/3</div>
+                <div>Key: <span id="key-status">No</span></div>
+            </div>
 
-        <div id="scene">🌙</div>
+            <div id="message-box">
+                Enter your name, then start your cozy maze adventure.
+            </div>
 
-        <div id="map" class="hidden">
-            <div class="map-room start-room">Start</div>
-            <div class="map-room tunnel-room">Tunnel</div>
-            <div class="map-room key-room">Key</div>
-            <div class="map-room river-room">River</div>
-            <div class="map-room bridge-room">Bridge</div>
-            <div class="map-room exit-room">Exit</div>
-            <div class="map-room forest-room">Forest</div>
+            <div id="start-screen">
+                <input id="name-input" type="text" placeholder="Your name">
+                <button id="sound-button">Sound: On</button>
+                <button id="start-button">Start</button>
+            </div>
 
-            <div id="player-token">🧍‍♀️</div>
-        </div>
+            <div id="game-board"></div>
 
-        <div id="story-box">
-            <p id="story-text">Enter your name to begin.</p>
-        </div>
+            <div id="mobile-controls" class="hidden">
+                <button id="up-button">▲</button>
+                <div>
+                    <button id="left-button">◀</button>
+                    <button id="down-button">▼</button>
+                    <button id="right-button">▶</button>
+                </div>
+            </div>
 
-        <div id="start-screen">
-            <input id="name-input" type="text" placeholder="Enter your name">
-            <button id="start-button">Start Game</button>
-        </div>
-
-        <div id="choices"></div>
-    </div>
+            <div id="instructions">
+                Move with Arrow Keys or WASD. On phone, use the buttons.
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>

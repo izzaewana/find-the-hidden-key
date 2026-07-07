@@ -5,249 +5,220 @@
 body {
     margin: 0;
     min-height: 100dvh;
-    background: linear-gradient(135deg, #111827, #2b1055, #0f172a);
-    color: white;
-    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(253, 186, 116, 0.35), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(134, 239, 172, 0.25), transparent 35%),
+        linear-gradient(135deg, #3b1f2b, #1f2933, #102a2b);
+    font-family: "Silkscreen", monospace;
+    color: #fff7dc;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 16px;
-    overflow-x: hidden;
+    padding: 18px;
 }
 
-.game-container {
-    width: min(650px, 100%);
-    min-height: auto;
-    background: rgba(0, 0, 0, 0.72);
-    padding: clamp(16px, 4vw, 30px);
-    border-radius: 22px;
-    text-align: center;
-    box-shadow: 0 0 35px rgba(255, 255, 255, 0.18);
-}
-
-h1 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-    font-size: clamp(24px, 7vw, 36px);
-}
-
-#status-bar {
+.game-wrapper {
+    width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+}
+
+.game-panel {
+    width: min(760px, 100%);
+    background: #2f1b2b;
+    border: 6px solid #f7c873;
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow:
+        0 16px 0 #1a1018,
+        0 25px 50px rgba(0, 0, 0, 0.45);
+    text-align: center;
+}
+
+.title-area h1 {
+    margin: 0;
+    font-family: "Press Start 2P", monospace;
+    font-size: clamp(18px, 5vw, 30px);
+    color: #ffe8a3;
+    text-shadow: 3px 3px 0 #7c2d12;
+}
+
+.title-area p {
+    margin: 10px 0 16px;
+    color: #fca5a5;
+    font-size: 18px;
+}
+
+#hud {
+    display: flex;
+    justify-content: space-between;
     gap: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #5b2a3d;
+    border: 4px solid #f7c873;
     border-radius: 14px;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: clamp(12px, 3.5vw, 14px);
+    padding: 12px;
+    margin-bottom: 14px;
+    color: #fff7dc;
+    font-size: clamp(12px, 3vw, 16px);
     flex-wrap: wrap;
 }
 
-#status-bar p {
-    margin: 0;
-}
-
-#scene {
-    font-size: clamp(42px, 13vw, 60px);
-    margin: 15px 0;
-    animation: float 2s ease-in-out infinite;
-}
-
-#map {
-    position: relative;
-    width: 100%;
-    max-width: 560px;
-    aspect-ratio: 560 / 260;
-    height: auto;
-    margin: 0 auto 25px auto;
-    border-radius: 18px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.35));
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    overflow: hidden;
-}
-
-.map-room {
-    position: absolute;
-    width: clamp(55px, 14vw, 75px);
-    height: clamp(30px, 8vw, 38px);
-    border-radius: 12px;
-    background: rgba(139, 92, 246, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(10px, 2.8vw, 13px);
-    transform: translate(-50%, -50%);
-}
-
-/* Use percentages so the map works on phone */
-.start-room {
-    left: 50%;
-    top: 84%;
-}
-
-.tunnel-room {
-    left: 20%;
-    top: 55%;
-}
-
-.key-room {
-    left: 13%;
-    top: 20%;
-}
-
-.river-room {
-    left: 78%;
-    top: 55%;
-}
-
-.bridge-room {
-    left: 84%;
-    top: 20%;
-}
-
-.exit-room {
-    left: 50%;
-    top: 16%;
-}
-
-.forest-room {
-    left: 86%;
-    top: 84%;
-}
-
-#player-token {
-    position: absolute;
-    left: 50%;
-    top: 84%;
-    font-size: clamp(24px, 7vw, 34px);
-    z-index: 5;
-    transition: left 0.7s ease, top 0.7s ease;
-    animation: playerBounce 0.6s infinite alternate;
-}
-
-#story-box {
-    min-height: 110px;
-    font-size: clamp(16px, 4.5vw, 20px);
-    line-height: 1.5;
-    margin-bottom: 25px;
-    padding: 0 5px;
-}
-
-#story-text {
-    margin: 0;
+#message-box {
+    min-height: 64px;
+    background: #1f2933;
+    border: 4px solid #94d2bd;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+    line-height: 1.4;
+    font-size: clamp(13px, 3.2vw, 16px);
 }
 
 #start-screen {
-    margin-top: 10px;
+    margin-bottom: 14px;
 }
 
 input {
+    font-family: "Silkscreen", monospace;
     padding: 12px;
-    width: min(230px, 100%);
-    border: none;
+    border: 4px solid #f7c873;
     border-radius: 10px;
-    font-size: 16px;
-    margin-right: 8px;
-    margin-bottom: 10px;
-}
-
-#choices {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    background: #fff7dc;
+    color: #2f1b2b;
+    width: min(240px, 100%);
+    margin-bottom: 8px;
 }
 
 button {
-    background: #8b5cf6;
-    color: white;
-    border: none;
-    padding: 12px 18px;
-    margin: 0;
-    font-size: clamp(14px, 4vw, 16px);
-    border-radius: 12px;
+    font-family: "Silkscreen", monospace;
+    background: #f59e0b;
+    color: #2f1b2b;
+    border: 4px solid #fff7dc;
+    border-radius: 10px;
+    padding: 11px 16px;
     cursor: pointer;
-    transition: 0.2s;
+    box-shadow: 0 5px 0 #92400e;
 }
 
-button:hover {
-    background: #a78bfa;
-    transform: scale(1.05);
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #92400e;
 }
 
-button.danger {
-    background: #dc2626;
+#game-board {
+    width: min(640px, 100%);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    background: #70b77e;
+    border: 6px solid #7c2d12;
+    border-radius: 16px;
+    overflow: hidden;
+    image-rendering: pixelated;
 }
 
-button.danger:hover {
-    background: #ef4444;
+.tile {
+    background-image: url("assets/tilemap_packed.png");
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    image-rendering: pixelated;
+    position: relative;
 }
 
-button.safe {
-    background: #16a34a;
+.player {
+    animation: playerHop 0.45s infinite alternate;
+    z-index: 2;
+    filter: drop-shadow(2px 4px 0 rgba(0, 0, 0, 0.35));
 }
 
-button.safe:hover {
-    background: #22c55e;
+.coin,
+.key {
+    animation:  infinite alternate;
+}
+
+.water {
+    animation: waterMove 1.2s infinite alternate;
 }
 
 .hidden {
     display: none !important;
 }
 
+#mobile-controls {
+    margin-top: 14px;
+}
+
+#mobile-controls button {
+    width: 58px;
+    height: 48px;
+    margin: 4px;
+    padding: 0;
+}
+
+#instructions {
+    margin-top: 14px;
+    font-size: clamp(11px, 3vw, 14px);
+    color: #fcd34d;
+}
+
 .win {
-    background: linear-gradient(135deg, #064e3b, #166534, #052e16);
+    background:
+        radial-gradient(circle at top, rgba(74, 222, 128, 0.35), transparent 35%),
+        linear-gradient(135deg, #064e3b, #14532d);
 }
 
-.lose {
-    background: linear-gradient(135deg, #450a0a, #7f1d1d, #111827);
-}
-
-@keyframes float {
-    0% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-
-    100% {
-        transform: translateY(0px);
-    }
-}
-
-@keyframes playerBounce {
+@keyframes playerHop {
     from {
-        transform: translate(-50%, -50%) translateY(0);
+        transform: translateY(0);
     }
 
     to {
-        transform: translate(-50%, -50%) translateY(-6px);
+        transform: translateY(-5px);
     }
 }
 
-@media (max-width: 480px) {
+@keyframes sparkle {
+    from {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    to {
+        transform: scale(1.12);
+        filter: brightness(1.35);
+    }
+}
+
+@keyframes waterMove {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.25);
+    }
+}
+
+@media (max-width: 600px) {
     body {
         padding: 10px;
     }
 
-    .game-container {
-        border-radius: 18px;
+    .game-panel {
+        padding: 12px;
+        border-width: 4px;
+        box-shadow:
+            0 10px 0 #1a1018,
+            0 18px 35px rgba(0, 0, 0, 0.45);
     }
 
-    #map {
-        margin-bottom: 20px;
+    #hud {
+        justify-content: center;
     }
 
-    input {
-        margin-right: 0;
-    }
-
-    button {
-        width: 100%;
-        max-width: 260px;
+    #mobile-controls {
+        display: block;
     }
 }

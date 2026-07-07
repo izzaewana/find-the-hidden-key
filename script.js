@@ -1,580 +1,377 @@
-const storyText = document.getElementById("story-text");
-const choices = document.getElementById("choices");
-const scene = document.getElementById("scene");
-const startScreen = document.getElementById("start-screen");
-const startButton = document.getElementById("start-button");
-const nameInput = document.getElementById("name-input");
-const statusBar = document.getElementById("status-bar");
-const playerNameText = document.getElementById("player-name");
-const healthText = document.getElementById("health");
+const gameBoard = document.getElementById("game-board");
+const messageBox = document.getElementById("message-box");
 const coinsText = document.getElementById("coins");
-const map = document.getElementById("map");
-const playerToken = document.getElementById("player-token");
+const keyStatus = document.getElementById("key-status");
+const playerNameText = document.getElementById("player-name");
+const nameInput = document.getElementById("name-input");
+const startButton = document.getElementById("start-button");
+const startScreen = document.getElementById("start-screen");
+const mobileControls = document.getElementById("mobile-controls");
 
-let player = {
-    name: "",
-    health: 3,
-    coins: 0,
-    hasKey: false
-};
+const upButton = document.getElementById("up-button");
+const downButton = document.getElementById("down-button");
+const leftButton = document.getElementById("left-button");
+const rightButton = document.getElementById("right-button");
 
-const playerPositions = {
-    start: {
-        left: "50%",
-        top: "84%"
-    },
-    tunnel: {
-        left: "20%",
-        top: "55%"
-    },
-    key: {
-        left: "13%",
-        top: "20%"
-    },
-    river: {
-        left: "78%",
-        top: "55%"
-    },
-    bridge: {
-        left: "84%",
-        top: "20%"
-    },
-    exit: {
-        left: "50%",
-        top: "16%"
-    },
-    forest: {
-        left: "86%",
-        top: "84%"
+const SHEET_COLUMNS = 12;
+const SHEET_ROWS = 11;
+
+const soundButton = document.getElementById("sound-button");
+
+let audioContext;
+let soundOn = true;
+let backgroundMusicStarted = false;
+
+function getAudioContext() {
+    if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContextClass();
     }
-};
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return audioContext;
 }
 
-function movePlayer(location) {
-    playerToken.style.left = playerPositions[location].left;
-    playerToken.style.top = playerPositions[location].top;
-}
-
-function playSound(type) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-
-    if (!AudioContextClass) {
+function playTone(frequency, duration, type = "sine", volume = 0.08) {
+    if (!soundOn) {
         return;
     }
 
-    const audio = new AudioContextClass();
+    const audio = getAudioContext();
     const oscillator = audio.createOscillator();
     const gain = audio.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(volume, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + duration);
 
     oscillator.connect(gain);
     gain.connect(audio.destination);
 
-    if (type === "click") {
-        oscillator.frequency.value = 500;
-    } else if (type === "win") {
-        oscillator.frequency.value = 800;
-    } else if (type === "lose") {
-        oscillator.frequency.value = 150;
-    } else {
-        oscillator.frequency.value = 300;
-    }
-
-    gain.gain.value = 0.08;
     oscillator.start();
+    oscillator.stop(audio.currentTime + duration);
+}
+
+function playCoinSound() {
+    playTone(880, 0.08, "square", 0.06);
 
     setTimeout(function() {
-        oscillator.stop();
-        audio.close();
-    }, 150);
+        playTone(1175, 0.1, "square", 0.05);
+    }, 80);
 }
 
-async function typeText(text) {
-    storyText.textContent = "";
+function playKeySound() {
+    playTone(523, 0.12, "sine", 0.07);
 
-    for (let char of text) {
-        storyText.textContent += char;
-        await sleep(28);
+    setTimeout(function() {
+        playTone(659, 0.12, "sine", 0.07);
+    }, 120);
+
+    setTimeout(function() {
+        playTone(784, 0.18, "sine", 0.07);
+    }, 240);
+}
+
+function playFlowerSound() {
+    playTone(698, 0.1, "triangle", 0.04);
+
+    setTimeout(function() {
+        playTone(880, 0.12, "triangle", 0.04);
+    }, 100);
+}
+
+function playBlockedSound() {
+    playTone(160, 0.12, "sawtooth", 0.05);
+}
+
+function playWinSound() {
+    playTone(523, 0.12, "square", 0.07);
+
+    setTimeout(function() {
+        playTone(659, 0.12, "square", 0.07);
+    }, 120);
+
+    setTimeout(function() {
+        playTone(784, 0.12, "square", 0.07);
+    }, 240);
+
+    setTimeout(function() {
+        playTone(1046, 0.3, "square", 0.07);
+    }, 360);
+}
+
+function startBackgroundMusic() {
+    if (!soundOn || backgroundMusicStarted) {
+        return;
     }
-}
 
-function updateStatus() {
-    playerNameText.textContent = player.name;
-    healthText.textContent = "❤️".repeat(player.health);
-    coinsText.textContent = player.coins;
-}
+    backgroundMusicStarted = true;
 
-function clearChoices() {
-    choices.innerHTML = "";
-}
+    const melody = [
+        261.63, 329.63, 392.00, 329.63,
+        293.66, 349.23, 440.00, 349.23,
+        261.63, 329.63, 392.00, 523.25,
+        440.00, 392.00, 329.63, 293.66
+    ];
 
-function showChoices(options) {
-    clearChoices();
+    let index = 0;
 
-    for (let option of options) {
-        const button = document.createElement("button");
-        button.textContent = option.text;
-
-        if (option.type === "danger") {
-            button.classList.add("danger");
+    setInterval(function() {
+        if (!soundOn) {
+            return;
         }
 
-        if (option.type === "safe") {
-            button.classList.add("safe");
+        playTone(melody[index], 0.6, "sine", 0.018);
+
+        index++;
+
+        if (index >= melody.length) {
+            index = 0;
         }
-
-        button.onclick = function() {
-            playSound("click");
-            option.action();
-        };
-
-        choices.appendChild(button);
-    }
+    }, 850);
 }
 
-function takeDamage() {
-    player.health--;
-    updateStatus();
+/*
+    These numbers choose which tile from tilemap_packed.png to show.
 
-    if (player.health <= 0) {
-        loseGame("Your health is gone. The maze becomes darker and darker... Game over.");
-        return true;
-    }
+    col = column number from left to right
+    row = row number from top to bottom
 
-    return false;
+    The first tile is:
+    col 0, row 0
+*/
+const tileSprites = {
+    grass: { col: 0, row: 2 },
+    grassSpot: { col: 0, row: 0 },
+    path: { col: 0, row: 2 },
+    Epath: { col: 0, row: 1 },
+    Spath: { col: 0, row: 3 },
+    Rpath: { col: 0, row: 5 },
+    R2path: { col: 1, row: 5 },
+    Lpath: { col: 2, row: 5 },
+    tree: { col: 4, row: 1 },
+    Lwater: { col: 2, row: 9 },
+    Rwater: { col: 3, row: 9 },
+    chicken: { col: 2, row: 10 },
+    fence: { col: 2, row: 6 },
+    gate: { col: 7, row: 10 },
+    coin: { col: 8, row: 5 },
+    key: { col: 4, row: 1 },
+    flower: { col: 11, row: 6 },
+    cow: { col: 1, row: 10 },
+    spawn: { col: 5, row: 6 },
+    doorOpen: { col: 4, row: 6 },
+    player: { col: 0, row: 9 }
+};
+
+const originalMap = [
+    ["tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree"],
+    ["tree", "Epath", "grassSpot", "coin", "Epath", "Epath", "flower", "Epath", "gate", "tree"],
+    ["tree", "grass", "tree", "tree", "grass", "Lwater", "Rwater", "grass", "path", "tree"],
+    ["tree", "Spath", "Epath", "Epath", "Spath", "Spath", "grass", "Spath", "path", "tree"],
+    ["tree", "tree", "grass", "Spath", "tree", "tree", "grass", "tree", "grass", "tree"],
+    ["tree", "coin", "Spath", "Rpath", "R2path", "Lpath", "grass", "tree", "grass", "key"],
+    ["tree", "grass", "tree", "tree", "tree", "tree", "Spath", "grassSpot", "Spath", "tree"],
+    ["tree", "chicken", "R2path", "flower", "Lpath", "tree", "tree", "tree", "coin", "tree"],
+    ["tree", "Spath", "spawn", "tree", "tree", "Rpath", "R2path", "R2path", "Lpath", "tree"],
+    ["tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree", "tree"]
+];
+
+let map = [];
+
+let player = {
+    name: "Traveler",
+    row: 8,
+    col: 2,
+    coins: 0,
+    hasKey: false,
+    gameStarted: false
+};
+
+function copyMap() {
+    return originalMap.map(function(row) {
+        return row.slice();
+    });
 }
 
-async function startGame() {
+function setTileSprite(tile, spriteName) {
+    const sprite = tileSprites[spriteName];
+
+    if (!sprite) {
+        return;
+    }
+
+    const xPosition = (sprite.col / (SHEET_COLUMNS - 1)) * 100;
+    const yPosition = (sprite.row / (SHEET_ROWS - 1)) * 100;
+
+    tile.style.backgroundPosition = xPosition + "% " + yPosition + "%";
+}
+
+function startGame() {
     const typedName = nameInput.value.trim();
 
-    if (typedName === "") {
-        player.name = "Traveler";
-    } else {
+    if (typedName !== "") {
         player.name = typedName;
+    } else {
+        player.name = "Traveler";
     }
 
-    player.health = 3;
+    player.row = 8;
+    player.col = 2;
     player.coins = 0;
     player.hasKey = false;
+    player.gameStarted = true;
+
+    map = copyMap();
 
     document.body.classList.remove("win");
-    document.body.classList.remove("lose");
-
     startScreen.classList.add("hidden");
-    statusBar.classList.remove("hidden");
-    map.classList.remove("hidden");
+    mobileControls.classList.remove("hidden");
 
-    updateStatus();
-    movePlayer("start");
+    updateHud();
+    drawMap();
 
-    scene.textContent = "🌙";
-    clearChoices();
-
-    await typeText("Welcome, " + player.name + ". You wake up inside a dark maze. The air is cold, and you hear footsteps behind you...");
-
-    showChoices([
-        {
-            text: "Go Left",
-            action: goLeft
-        },
-        {
-            text: "Go Right",
-            action: goRight
-        },
-        {
-            text: "Call for Help",
-            action: callForHelp,
-            type: "danger"
-        }
-    ]);
+    messageBox.textContent = "Welcome, " + player.name + "! Collect 3 coins and find the HIDDEN key to unlock the gate.";
+    startBackgroundMusic();
 }
 
-async function goLeft() {
-    scene.textContent = "🕳️";
-    movePlayer("tunnel");
-    clearChoices();
-
-    await typeText("You walk left and find a dark tunnel. Something shiny is glowing at the end.");
-
-    showChoices([
-        {
-            text: "Enter Tunnel",
-            action: enterTunnel
-        },
-        {
-            text: "Pick Up Shiny Object",
-            action: pickUpKey,
-            type: "safe"
-        },
-        {
-            text: "Run Back",
-            action: runBack
-        }
-    ]);
+function updateHud() {
+    playerNameText.textContent = player.name;
+    coinsText.textContent = player.coins;
+    keyStatus.textContent = player.hasKey ? "Yes" : "No";
 }
 
-async function goRight() {
-    scene.textContent = "🌊";
-    movePlayer("river");
-    clearChoices();
+function drawMap() {
+    gameBoard.innerHTML = "";
 
-    await typeText("You walk right and reach a river. There is an old wooden bridge above it. The water is moving fast.");
+    for (let row = 0; row < map.length; row++) {
+        for (let col = 0; col < map[row].length; col++) {
+            const tile = document.createElement("div");
+            const tileType = map[row][col];
 
-    showChoices([
-        {
-            text: "Use Bridge",
-            action: useBridge,
-            type: "safe"
-        },
-        {
-            text: "Swim Across",
-            action: swimAcross,
-            type: "danger"
-        },
-        {
-            text: "Search Riverbank",
-            action: searchRiverbank
-        }
-    ]);
-}
+            tile.classList.add("tile");
+            tile.classList.add(tileType);
 
-async function callForHelp() {
-    scene.textContent = "👹";
-    clearChoices();
-
-    await typeText("You call for help. Something answers... but it is not human. You lose 1 health.");
-
-    const isDead = takeDamage();
-
-    if (!isDead) {
-        showChoices([
-            {
-                text: "Run Left",
-                action: goLeft
-            },
-            {
-                text: "Run Right",
-                action: goRight
+            if (row === player.row && col === player.col) {
+                setTileSprite(tile, "player");
+                tile.classList.add("player");
+            } else {
+                setTileSprite(tile, tileType);
             }
-        ]);
+
+            gameBoard.appendChild(tile);
+        }
     }
 }
 
-async function enterTunnel() {
-    scene.textContent = "💰";
-    movePlayer("tunnel");
-    clearChoices();
-
-    player.coins += 10;
-    updateStatus();
-
-    await typeText("You enter the tunnel and find a treasure chest. You collect 10 coins. Behind the chest, there is a locked golden door.");
-
-    showChoices([
-        {
-            text: "Open Golden Door",
-            action: openGoldenDoor,
-            type: "safe"
-        },
-        {
-            text: "Leave Tunnel",
-            action: goRight
-        }
-    ]);
-}
-
-async function pickUpKey() {
-    scene.textContent = "🗝️";
-    movePlayer("key");
-    clearChoices();
-
-    player.hasKey = true;
-    updateStatus();
-
-    await typeText("You pick up the shiny object. It is a golden key. This might be useful later.");
-
-    showChoices([
-        {
-            text: "Enter Tunnel",
-            action: enterTunnel
-        },
-        {
-            text: "Go Back",
-            action: goRight
-        }
-    ]);
-}
-
-async function runBack() {
-    scene.textContent = "🏃";
-    movePlayer("start");
-    clearChoices();
-
-    await typeText("You run back, but you trip on a broken stone. You lose 1 health.");
-
-    const isDead = takeDamage();
-
-    if (!isDead) {
-        showChoices([
-            {
-                text: "Go Left Again",
-                action: goLeft
-            },
-            {
-                text: "Go Right",
-                action: goRight
-            }
-        ]);
+function movePlayer(rowChange, colChange) {
+    if (!player.gameStarted) {
+        messageBox.textContent = "Press Start first.";
+        return;
     }
-}
 
-async function openGoldenDoor() {
-    clearChoices();
+    const newRow = player.row + rowChange;
+    const newCol = player.col + colChange;
 
-    if (player.hasKey) {
-        scene.textContent = "🏆";
-        movePlayer("exit");
-        await winGame("You use the golden key to open the door. A bright light fills the maze. You escaped with treasure. You win!");
+    const nextTile = map[newRow][newCol];
+
+    if (nextTile === "tree" || nextTile === "fence") {
+        playBlockedSound();
+        messageBox.textContent = "Something blocks your way.";
+        return;
+    }
+
+    if (nextTile === "Lwater" || nextTile === "Rwater") {
+        playBlockedSound();
+        messageBox.textContent = "You cannot walk into the water.";
+        return;
+    }
+
+    if (nextTile === "coin") {
+        playCoinSound();
+        player.coins++;
+        map[newRow][newCol] = "spawn";
+        messageBox.textContent = "You collected a coin! You have " + player.coins + "/3 coins.";
+    } else if (nextTile === "key") {
+        playKeySound();
+        player.hasKey = true;
+        map[newRow][newCol] = "cow";
+    
+        messageBox.textContent = "You found the hidden key! Now find the gate.";
+    } else if (nextTile === "chicken") {
+        playChickenSound();
+        messageBox.textContent = "Meet Sally!";
+    } else if (nextTile === "flower") {
+        playFlowerSound();
+        messageBox.textContent = "A cute flower patch. Very cottagecore.";
+    } else if (nextTile === "gate") {
+        if (player.hasKey && player.coins >= 3) {
+            player.row = newRow;
+            player.col = newCol;
+            winGame();
+            map[newRow][newCol] = "doorOpen";
+            return;
+        } else {
+            playBlockedSound();
+            messageBox.textContent = "The gate needs 3 coins and a key.";
+            return;
+        }
     } else {
-        scene.textContent = "🔒";
-        await typeText("The door is locked. You need a key.");
-
-        showChoices([
-            {
-                text: "Search for Key",
-                action: pickUpKey,
-                type: "safe"
-            },
-            {
-                text: "Go to River",
-                action: goRight
-            }
-        ]);
-    }
-}
-
-async function useBridge() {
-    scene.textContent = "🌉";
-    movePlayer("bridge");
-    clearChoices();
-
-    await typeText("You step onto the wooden bridge. It creaks loudly, but you move carefully and cross safely.");
-
-    showChoices([
-        {
-            text: "Follow Exit Sign",
-            action: exitMaze,
-            type: "safe"
-        },
-        {
-            text: "Explore Forest Path",
-            action: forestPath
-        }
-    ]);
-}
-
-async function swimAcross() {
-    scene.textContent = "🌊";
-    movePlayer("river");
-    clearChoices();
-
-    await typeText("You jump into the river. The current is too strong. You lose 1 health.");
-
-    const isDead = takeDamage();
-
-    if (!isDead) {
-        showChoices([
-            {
-                text: "Grab a Rock",
-                action: grabRock,
-                type: "safe"
-            },
-            {
-                text: "Keep Swimming",
-                action: keepSwimming,
-                type: "danger"
-            }
-        ]);
-    }
-}
-
-async function searchRiverbank() {
-    scene.textContent = "🪙";
-    movePlayer("river");
-    clearChoices();
-
-    player.coins += 5;
-    updateStatus();
-
-    await typeText("You search the riverbank and find 5 coins inside an old pouch.");
-
-    showChoices([
-        {
-            text: "Use Bridge",
-            action: useBridge,
-            type: "safe"
-        },
-        {
-            text: "Go Back to Tunnel",
-            action: goLeft
-        }
-    ]);
-}
-
-async function grabRock() {
-    scene.textContent = "🪨";
-    movePlayer("river");
-    clearChoices();
-
-    await typeText("You grab a rock and pull yourself out of the river. You are safe, but very tired.");
-
-    showChoices([
-        {
-            text: "Use Bridge Instead",
-            action: useBridge,
-            type: "safe"
-        },
-        {
-            text: "Rest",
-            action: rest
-        }
-    ]);
-}
-
-async function keepSwimming() {
-    scene.textContent = "💀";
-    movePlayer("river");
-    clearChoices();
-
-    await typeText("You keep swimming, but the river pulls you under.");
-
-    await loseGame("You could not escape the river. Game over.");
-}
-
-async function rest() {
-    scene.textContent = "✨";
-    clearChoices();
-
-    if (player.health < 3) {
-        player.health++;
-        updateStatus();
-        await typeText("You rest for a moment and recover 1 health.");
-    } else {
-        await typeText("You rest for a moment. You already have full health.");
+        messageBox.textContent = "You walk through the cozy maze.";
     }
 
-    showChoices([
-        {
-            text: "Use Bridge",
-            action: useBridge,
-            type: "safe"
-        },
-        {
-            text: "Go Left",
-            action: goLeft
-        }
-    ]);
+    player.row = newRow;
+    player.col = newCol;
+
+    updateHud();
+    drawMap();
 }
 
-async function exitMaze() {
-    scene.textContent = "🚪";
-    movePlayer("exit");
-    clearChoices();
-
-    if (player.coins >= 10) {
-        await winGame("You find the maze exit and escape with " + player.coins + " coins. Rich behavior. You win!");
-    } else {
-        await typeText("You find the exit, but a guard blocks the door and asks for 10 coins. You do not have enough.");
-
-        showChoices([
-            {
-                text: "Search for Coins",
-                action: searchRiverbank
-            },
-            {
-                text: "Go to Tunnel",
-                action: enterTunnel
-            }
-        ]);
-    }
-}
-
-async function forestPath() {
-    scene.textContent = "🌲";
-    movePlayer("forest");
-    clearChoices();
-
-    await typeText("You walk into the forest path. The trees whisper your name. You lose 1 health from fear.");
-
-    const isDead = takeDamage();
-
-    if (!isDead) {
-        showChoices([
-            {
-                text: "Run to Exit",
-                action: exitMaze,
-                type: "safe"
-            },
-            {
-                text: "Follow the Whisper",
-                action: followWhisper,
-                type: "danger"
-            }
-        ]);
-    }
-}
-
-async function followWhisper() {
-    scene.textContent = "👻";
-    movePlayer("forest");
-    clearChoices();
-
-    await typeText("You follow the whisper and find a ghost guarding a secret door.");
-
-    if (player.hasKey) {
-        movePlayer("exit");
-        await winGame("The ghost sees your golden key and lets you pass. You found the secret ending. You win!");
-    } else {
-        await loseGame("The ghost asks for the golden key, but you do not have it. The maze traps you forever. Game over.");
-    }
-}
-
-async function winGame(message) {
-    playSound("win");
+function winGame() {
     document.body.classList.add("win");
-    document.body.classList.remove("lose");
-    scene.textContent = "🏆";
-    clearChoices();
-
-    await typeText(message);
-
-    showChoices([
-        {
-            text: "Play Again",
-            action: startGame,
-            type: "safe"
-        }
-    ]);
+    playWinSound();
+    messageBox.textContent = "You unlocked the gate and escaped the cozy maze. You win!";
+    updateHud();
+    drawMap();
 }
 
-async function loseGame(message) {
-    playSound("lose");
-    document.body.classList.add("lose");
-    document.body.classList.remove("win");
-    scene.textContent = "💀";
-    clearChoices();
+function playChickenSound() {
+    playTone(520, 0.08, "square", 0.05);
 
-    await typeText(message);
+    setTimeout(function() {
+        playTone(680, 0.08, "square", 0.05);
+    }, 90);
 
-    showChoices([
-        {
-            text: "Try Again",
-            action: startGame
-        }
-    ]);
+    setTimeout(function() {
+        playTone(520, 0.1, "square", 0.04);
+    }, 180);
 }
+
+document.addEventListener("keydown", function(event) {
+    const key = event.key.toLowerCase();
+
+    if (key === "arrowup" || key === "w") {
+        movePlayer(-1, 0);
+    } else if (key === "arrowdown" || key === "s") {
+        movePlayer(1, 0);
+    } else if (key === "arrowleft" || key === "a") {
+        movePlayer(0, -1);
+    } else if (key === "arrowright" || key === "d") {
+        movePlayer(0, 1);
+    }
+});
+
+soundButton.addEventListener("click", function() {
+    soundOn = !soundOn;
+
+    if (soundOn) {
+        soundButton.textContent = "Sound: On";
+        startBackgroundMusic();
+    } else {
+        soundButton.textContent = "Sound: Off";
+    }
+});
 
 startButton.addEventListener("click", startGame);
 
@@ -583,3 +380,22 @@ nameInput.addEventListener("keydown", function(event) {
         startGame();
     }
 });
+
+upButton.addEventListener("click", function() {
+    movePlayer(-1, 0);
+});
+
+downButton.addEventListener("click", function() {
+    movePlayer(1, 0);
+});
+
+leftButton.addEventListener("click", function() {
+    movePlayer(0, -1);
+});
+
+rightButton.addEventListener("click", function() {
+    movePlayer(0, 1);
+});
+
+map = copyMap();
+drawMap();
