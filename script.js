@@ -20,32 +20,32 @@ let player = {
 
 const playerPositions = {
     start: {
-        left: "262px",
-        top: "203px"
+        left: "50%",
+        top: "84%"
     },
     tunnel: {
-        left: "92px",
-        top: "128px"
+        left: "20%",
+        top: "55%"
     },
     key: {
-        left: "58px",
-        top: "38px"
+        left: "13%",
+        top: "20%"
     },
     river: {
-        left: "428px",
-        top: "128px"
+        left: "78%",
+        top: "55%"
     },
     bridge: {
-        left: "462px",
-        top: "38px"
+        left: "84%",
+        top: "20%"
     },
     exit: {
-        left: "268px",
-        top: "28px"
+        left: "50%",
+        top: "16%"
     },
     forest: {
-        left: "472px",
-        top: "203px"
+        left: "86%",
+        top: "84%"
     }
 };
 
