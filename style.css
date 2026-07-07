@@ -222,3 +222,17 @@ button:active {
         display: block;
     }
 }
+
+#sound-button {
+    margin-bottom: 14px;
+    background: #94d2bd;
+    color: #1f2933;
+}
+
+@media (max-width: 600px) {
+    #sound-button {
+        width: 100%;
+        max-width: 260px;
+        margin-bottom: 14px;
+    }
+}

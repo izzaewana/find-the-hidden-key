@@ -336,6 +336,20 @@ function winGame() {
     drawMap();
 }
 
+function unlockAudio() {
+    if (!soundOn) {
+        return;
+    }
+
+    const audio = getAudioContext();
+
+    if (audio.state === "suspended") {
+        audio.resume();
+    }
+
+    playTone(440, 0.05, "sine", 0.01);
+}
+
 function playChickenSound() {
     playTone(520, 0.08, "square", 0.05);
 
@@ -373,7 +387,10 @@ soundButton.addEventListener("click", function() {
     }
 });
 
-startButton.addEventListener("click", startGame);
+startButton.addEventListener("click", function() {
+    unlockAudio();
+    startGame();
+});
 
 nameInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
@@ -382,18 +399,22 @@ nameInput.addEventListener("keydown", function(event) {
 });
 
 upButton.addEventListener("click", function() {
+    unlockAudio();
     movePlayer(-1, 0);
 });
 
 downButton.addEventListener("click", function() {
+    unlockAudio();
     movePlayer(1, 0);
 });
 
 leftButton.addEventListener("click", function() {
+    unlockAudio();
     movePlayer(0, -1);
 });
 
 rightButton.addEventListener("click", function() {
+    unlockAudio();
     movePlayer(0, 1);
 });
 
