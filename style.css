@@ -248,3 +248,97 @@ button {
         margin-bottom: 14px;
     }
 }
+
+#confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 50;
+}
+
+.confetti {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    border-radius: 2px;
+    animation: confettiFall 2.8s linear forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+#unlock-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 60;
+    padding: 20px;
+}
+
+#unlock-card {
+    width: min(360px, 100%);
+    background: #2f1b2b;
+    border: 6px solid #f7c873;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    color: #fff7dc;
+    box-shadow:
+        0 12px 0 #1a1018,
+        0 25px 50px rgba(0, 0, 0, 0.55);
+    animation: popIn 0.4s ease-out;
+}
+
+#unlock-card h2 {
+    margin-top: 0;
+    color: #ffe8a3;
+    font-size: 20px;
+}
+
+#unlocked-character {
+    width: 96px;
+    height: 96px;
+    margin: 18px auto;
+    background-image: url("assets/tilemap_packed.png");
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    image-rendering: pixelated;
+    transform: scale(1.5);
+    animation: unlockBounce 0.7s infinite alternate;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes unlockBounce {
+    from {
+        transform: scale(1.5) translateY(0);
+    }
+
+    to {
+        transform: scale(1.5) translateY(-8px);
+    }
+}

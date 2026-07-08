@@ -13,6 +13,11 @@ const downButton = document.getElementById("down-button");
 const leftButton = document.getElementById("left-button");
 const rightButton = document.getElementById("right-button");
 
+const confettiContainer = document.getElementById("confetti-container");
+const unlockPopup = document.getElementById("unlock-popup");
+const unlockedCharacter = document.getElementById("unlocked-character");
+const closeUnlockButton = document.getElementById("close-unlock-button");
+
 const SHEET_COLUMNS = 12;
 const SHEET_ROWS = 11;
 
@@ -321,8 +326,8 @@ function movePlayer(rowChange, colChange) {
         if (player.hasKey && player.coins >= 3) {
             player.row = newRow;
             player.col = newCol;
-            winGame();
             map[newRow][newCol] = "doorOpen";
+            winGame();
             return;
         } else {
             playBlockedSound();
@@ -340,15 +345,68 @@ function movePlayer(rowChange, colChange) {
     drawMap();
 }
 
+function createConfetti() {
+    const colors = ["#f87171", "#facc15", "#4ade80", "#60a5fa", "#c084fc", "#fb923c"];
+
+    for (let i = 0; i < 90; i++) {
+        const confetti = document.createElement("div");
+
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.8 + "s";
+        confetti.style.animationDuration = 2 + Math.random() * 1.5 + "s";
+
+        confettiContainer.appendChild(confetti);
+
+        setTimeout(function() {
+            confetti.remove();
+        }, 4000);
+    }
+}
+
+function setUnlockSprite(spriteName) {
+    const sprite = tileSprites[spriteName];
+
+    if (!sprite) {
+        return;
+    }
+
+    const xPosition = (sprite.col / (SHEET_COLUMNS - 1)) * 100;
+    const yPosition = (sprite.row / (SHEET_ROWS - 1)) * 100;
+
+    unlockedCharacter.style.backgroundPosition = xPosition + "% " + yPosition + "%";
+}
+
+function showCharacterUnlock() {
+    const alreadyUnlocked = localStorage.getItem("sallyUnlocked");
+
+    if (alreadyUnlocked === "yes") {
+        return;
+    }
+
+    localStorage.setItem("sallyUnlocked", "yes");
+
+    setUnlockSprite("chicken");
+    unlockPopup.classList.remove("hidden");
+}
+
 function winGame() {
     document.body.classList.add("win");
     playWinSound();
+    createConfetti();
+
     messageBox.textContent = "You unlocked the gate and escaped the cozy maze. You win!";
+
     updateHud();
     drawMap();
+
+    setTimeout(function() {
+        showCharacterUnlock();
+    }, 900);
 }
 
-function unlockAudio() {
+async function unlockAudio() {
     if (!soundOn) {
         return;
     }
@@ -356,14 +414,18 @@ function unlockAudio() {
     const audio = getAudioContext();
 
     if (audio.state === "suspended") {
-        audio.resume();
+        await audio.resume();
     }
 
     playTone(440, 0.05, "sine", 0.01);
 }
 
-
 document.addEventListener("keydown", function(event) {
+    // If user is typing inside an input box, do not use WASD/arrow keys for movement
+    if (event.target.tagName === "INPUT") {
+        return;
+    }
+
     const key = event.key.toLowerCase();
 
     const movementKeys = [
@@ -403,40 +465,46 @@ soundButton.addEventListener("click", function() {
     }
 });
 
-startButton.addEventListener("click", function() {
+startButton.addEventListener("pointerdown", async function(event) {
     event.preventDefault();
     await unlockAudio();
     startGame();
 });
 
-nameInput.addEventListener("keydown", function(event) {
+nameInput.addEventListener("keydown", async function(event) {
     if (event.key === "Enter") {
+        event.preventDefault();
+        await unlockAudio();
         startGame();
     }
 });
 
-upButton.addEventListener("click", function() {
+upButton.addEventListener("pointerdown", async function(event) {
     event.preventDefault();
     await unlockAudio();
     movePlayer(-1, 0);
 });
 
-downButton.addEventListener("click", function() {
+downButton.addEventListener("pointerdown", async function(event) {
     event.preventDefault();
     await unlockAudio();
     movePlayer(1, 0);
 });
 
-leftButton.addEventListener("click", function() {
+leftButton.addEventListener("pointerdown", async function(event) {
     event.preventDefault();
     await unlockAudio();
     movePlayer(0, -1);
 });
 
-rightButton.addEventListener("click", function() {
+rightButton.addEventListener("pointerdown", async function(event) {
     event.preventDefault();
     await unlockAudio();
     movePlayer(0, 1);
+});
+
+closeUnlockButton.addEventListener("click", function() {
+    unlockPopup.classList.add("hidden");
 });
 
 map = copyMap();
