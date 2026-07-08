@@ -101,6 +101,18 @@ function playWinSound() {
     }, 360);
 }
 
+function playChickenSound() {
+    playTone(520, 0.08, "square", 0.05);
+
+    setTimeout(function() {
+        playTone(680, 0.08, "square", 0.05);
+    }, 90);
+
+    setTimeout(function() {
+        playTone(520, 0.1, "square", 0.04);
+    }, 180);
+}
+
 function startBackgroundMusic() {
     if (!soundOn || backgroundMusicStarted) {
         return;
@@ -350,20 +362,24 @@ function unlockAudio() {
     playTone(440, 0.05, "sine", 0.01);
 }
 
-function playChickenSound() {
-    playTone(520, 0.08, "square", 0.05);
-
-    setTimeout(function() {
-        playTone(680, 0.08, "square", 0.05);
-    }, 90);
-
-    setTimeout(function() {
-        playTone(520, 0.1, "square", 0.04);
-    }, 180);
-}
 
 document.addEventListener("keydown", function(event) {
     const key = event.key.toLowerCase();
+
+    const movementKeys = [
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+        "w",
+        "a",
+        "s",
+        "d"
+    ];
+
+    if (movementKeys.includes(key)) {
+        event.preventDefault();
+    }
 
     if (key === "arrowup" || key === "w") {
         movePlayer(-1, 0);
@@ -388,7 +404,8 @@ soundButton.addEventListener("click", function() {
 });
 
 startButton.addEventListener("click", function() {
-    unlockAudio();
+    event.preventDefault();
+    await unlockAudio();
     startGame();
 });
 
@@ -399,22 +416,26 @@ nameInput.addEventListener("keydown", function(event) {
 });
 
 upButton.addEventListener("click", function() {
-    unlockAudio();
+    event.preventDefault();
+    await unlockAudio();
     movePlayer(-1, 0);
 });
 
 downButton.addEventListener("click", function() {
-    unlockAudio();
+    event.preventDefault();
+    await unlockAudio();
     movePlayer(1, 0);
 });
 
 leftButton.addEventListener("click", function() {
-    unlockAudio();
+    event.preventDefault();
+    await unlockAudio();
     movePlayer(0, -1);
 });
 
 rightButton.addEventListener("click", function() {
-    unlockAudio();
+    event.preventDefault();
+    await unlockAudio();
     movePlayer(0, 1);
 });
 
