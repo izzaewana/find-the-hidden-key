@@ -47,8 +47,8 @@ const charactersButton = document.getElementById("characters-button");
 const SHEET_COLUMNS = 12;
 const SHEET_ROWS = 11;
 
-const chickenAudio = new Audio("assets/sounds/chicken.wav");
-chickenAudio.volume = 1.0;
+const chickenAudio = new Audio("./assets/chicken.wav");
+chickenAudio.volume = 0.2;
 chickenAudio.preload = "auto";
 
 let audioContext;
