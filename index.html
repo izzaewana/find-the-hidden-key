@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lost in the Maze: Cozy Edition</title>
+    <title>Find the Hidden Key</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
@@ -13,40 +13,91 @@
     <main class="game-wrapper">
         <section class="game-panel">
             <div class="title-area">
-                <h1>Lost in the Maze</h1>
-                <p>Cozy Edition</p>
+                <h1>Find the Hidden Key</h1>
+                <p>Cozy Pixel Adventure</p>
             </div>
 
-            <div id="hud">
-                <div>Player: <span id="player-name">Traveler</span></div>
-                <div>Coins: <span id="coins">0</span>/3</div>
-                <div>Key: <span id="key-status">No</span></div>
-            </div>
-
-            <div id="message-box">
-                Enter your name, then start your cozy maze adventure.
-            </div>
-
-            <div id="start-screen">
-                <input id="name-input" type="text" placeholder="Your name">
-                <button id="start-button">Start</button>
-            </div>
-            
             <button id="sound-button">Sound: On</button>
-            
-            <div id="game-board"></div>
 
-            <div id="mobile-controls" class="hidden">
-                <button id="up-button">▲</button>
-                <div>
-                    <button id="left-button">◀</button>
-                    <button id="down-button">▼</button>
-                    <button id="right-button">▶</button>
-                </div>
+            <!-- INTRO SCREEN -->
+            <div id="intro-screen" class="screen">
+                <h2>Welcome, Traveler</h2>
+                <p>
+                    Explore the cozy maze, collect coins, find the hidden key,
+                    and unlock the gate.
+                </p>
+
+                <input id="name-input" type="text" placeholder="Your name">
+
+                <button id="go-character-button">Start Adventure</button>
             </div>
 
-            <div id="instructions">
-                Move with Arrow Keys or WASD. On phone, use the buttons.
+            <!-- CHARACTER SELECT SCREEN -->
+            <div id="character-screen" class="screen hidden">
+                <h2>Choose Character</h2>
+
+                <div class="character-options">
+                    <button class="character-card" id="traveler-card">
+                        <div class="character-preview" id="traveler-preview"></div>
+                        <p>Traveler</p>
+                    </button>
+
+                    <button class="character-card locked" id="sally-card">
+                        <div class="character-preview" id="sally-preview"></div>
+                        <p id="sally-text">Sally 🔒</p>
+                    </button>
+                </div>
+
+                <button id="go-level-button">Continue</button>
+            </div>
+
+            <!-- LEVEL SELECT SCREEN -->
+            <div id="level-screen" class="screen hidden">
+                <h2>Select Level</h2>
+
+                <button id="level-one-button">Level 1: Smol Farm</button>
+                <button class="locked-level" disabled>Level 2: Coming Soon</button>
+                <button class="locked-level" disabled>Level 3: Coming Soon</button>
+
+                <button id="back-character-button">Back</button>
+            </div>
+
+            <!-- GAME SCREEN -->
+            <div id="game-screen" class="screen hidden">
+                <div id="hud">
+                    <div>Player: <span id="player-name">Traveler</span></div>
+                    <div>Coins: <span id="coins">0</span>/3</div>
+                    <div>Key: <span id="key-status">No</span></div>
+                </div>
+
+                <div id="message-box">
+                    Find the hidden key and unlock the gate.
+                </div>
+
+                <div id="game-board"></div>
+
+                <div id="mobile-controls">
+                    <button id="up-button">▲</button>
+                    <div>
+                        <button id="left-button">◀</button>
+                        <button id="down-button">▼</button>
+                        <button id="right-button">▶</button>
+                    </div>
+                </div>
+
+                <div id="instructions">
+                    Move with Arrow Keys or WASD. On phone, use the buttons.
+                </div>
+                <div id="end-popup" class="hidden">
+                    <div id="end-card">
+                        <h2>Level Complete!</h2>
+                        <p>You found the hidden key and escaped the maze.</p>
+
+                        <button id="replay-button">Replay Level</button>
+                        <button id="levels-button">Return to Levels</button>
+                        <button id="characters-button">Choose Character</button>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -60,7 +111,7 @@
             <p>You unlocked Sally the Chicken!</p>
             <button id="close-unlock-button">Yay!</button>
         </div>
-</div>
+    </div>
 
     <script src="script.js"></script>
 </body>
